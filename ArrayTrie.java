@@ -1,5 +1,6 @@
 package stringpredecessor;
 
+import java.util.ArrayList;
 
 public class ArrayTrie {
 	private ArrayTrie parent;
@@ -12,6 +13,11 @@ public class ArrayTrie {
 		parent = pnode;
 		count = 0;
 		character = newCharacter;
+	}
+	
+	public ArrayTrie() {
+		children = new ArrayTrie[28];
+		count = 0;
 	}
 	
 	void insert(String newString) {
@@ -107,5 +113,41 @@ public class ArrayTrie {
 	
 	public char intToChar(int c) {
 		return (char) (c + 97);
+	}
+	
+	public ArrayList<String> sorted(String curWord) {
+		ArrayList<String> tempStrings = new ArrayList();
+		if(count > 0) {
+			tempStrings.add(curWord + character);
+		}
+		for(int i = 0; i < 26; i++) {
+			if(children[i] != null) {
+				tempStrings.addAll(children[i].sorted(curWord + character));
+			}
+		}
+		return tempStrings;
+	}
+
+	
+	public static String[] sortStrings(String[] toSort) {
+		ArrayTrie t = new ArrayTrie();
+		for(String str : toSort) {
+			t.insert(str);
+		}
+		ArrayList<String> sortedArray = t.sorted("");
+		String[] temp = new String[sortedArray.size()];
+		temp = sortedArray.toArray(temp);
+		return temp;
+		
+	}
+	public static void main(String args[]) {
+		
+		String[] testStrings = {"hello", "hell", "aaaa", "adfslj", "asdfajsldkjfa"};
+		String[] testResult = sortStrings(testStrings);
+		
+		for(String i : testResult) {
+			System.out.println(i);
+		}
+		
 	}
 }

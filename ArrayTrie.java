@@ -24,8 +24,8 @@ public class ArrayTrie {
 		if(newString.length() == 0) {
 			count++;
 			children[26] = predecessor();
-			children[26].setSuccessor(this);
 			children[27] = successor();
+			children[26].setSuccessor(this);
 			children[27].setPredecessor(this);
 		}
 		else {
@@ -44,46 +44,96 @@ public class ArrayTrie {
 	
 	public ArrayTrie predecessor() {
 		if(children[26] == null) {
-			for(int i = charToInt(character)-1; i >=0; i--) {
-				if(parent.children[i] != null) {
-					return parent.children[i];
-				}
-			}
-			for(int i = charToInt(parent.character)-1; i >=0; i--) {
-				ArrayTrie curChild = parent.parent.children[i];
-				if(curChild != null){
-					for(int j = 25; j >=0; j--) {
-						if(curChild.children[j] != null) {
-							return curChild.children[j];
-						}
-					}
-				}
-			}
-			return parent;
+			return recurseUp();
 		}
 		else {
 			return children[26];
 		}
 	}
 	
-	public ArrayTrie successor() {
-		if(children[27] == null) {
-			for(int i = charToInt(character)+1; i < 26; i++) {
-				if(parent.children[i] != null) {
+	private ArrayTrie recurseUp() {
+		if(parent == null) {
+			return parent;
+		}
+		ArrayTrie result;
+		for(int i = charToInt(character)-1; i >=0; i--) {
+			if(parent.children[i] != null) {
+				if(parent.children[i].count > 0) {
 					return parent.children[i];
 				}
-			}
-			for(int i = charToInt(parent.character)+1; i < 26; i++) {
-				ArrayTrie curChild = parent.parent.children[i];
-				if(curChild != null){
-					for(int j = 0; j < 26; j++) {
-						if(curChild.children[j] != null) {
-							return curChild.children[j];
-						}
+				else {
+					result = parent.children[i].recurseDown();
+					if(result != null) {
+						return result;
 					}
 				}
 			}
+		}
+		if(count > 0) {
+			return this;
+		}
+		return parent.recurseUp();
+	}
+	
+	private ArrayTrie recurseDown() {
+		ArrayTrie t;
+		for(int i = 25; i >=0; i--) {
+			if(children[i] != null) {
+				t = children[i].recurseDown();
+				if(t != null) {
+					return t;
+				}
+			}
+		}
+		if(count > 0) {
+			return this;
+		}
+		return null;
+	}
+	
+	private ArrayTrie recurseUpSuc() {
+		if(parent == null) {
 			return parent;
+		}
+		ArrayTrie result;
+		for(int i = charToInt(character)+1; i < 26; i++) {
+			if(parent.children[i] != null) {
+				if(parent.children[i].count > 0) {
+					return parent.children[i];
+				}
+				else {
+					result = parent.children[i].recurseDownSuc();
+					if(result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		if(count > 0) {
+			return this;
+		}
+		return parent.recurseUpSuc();
+	}
+	
+	private ArrayTrie recurseDownSuc() {
+		ArrayTrie t;
+		for(int i = 0; i < 26; i++) {
+			if(children[i] != null) {
+				t = children[i].recurseDownSuc();
+				if(t != null) {
+					return t;
+				}
+			}
+		}
+		if(count > 0) {
+			return this;
+		}
+		return null;
+	}
+	
+	public ArrayTrie successor() {
+		if(children[27] == null) {
+			return recurseUpSuc();
 		}
 		else {
 			return children[27];
@@ -148,6 +198,13 @@ public class ArrayTrie {
 		for(String i : testResult) {
 			System.out.println(i);
 		}
+		
+		
+		ArrayTrie t = new ArrayTrie();
+		for(String str : testStrings) {
+			t.insert(str);
+		}
+		System.out.println(t.children[0].children[3].successor().getWord());
 		
 	}
 }

@@ -23,6 +23,7 @@ public class ArrayTrie {
 	void insert(String newString) {
 		if(newString.length() == 0) {
 			count++;
+			//set predecessors and successors
 			children[26] = predecessor();
 			children[27] = successor();
 			children[26].setSuccessor(this);
@@ -36,10 +37,18 @@ public class ArrayTrie {
 			}
 			children[ind].insert(newString.substring(1));
 			
-			//set predecessors and successors
+			
 
 		}
 		
+	}
+	
+	public ArrayTrie getNode(String nodeName) {
+		if(nodeName.length() == 0) {
+			return this;
+		}
+		int ind = charToInt(nodeName.charAt(0));
+		return children[ind].getNode(nodeName.substring(1));
 	}
 	
 	public ArrayTrie predecessor() {
@@ -192,7 +201,8 @@ public class ArrayTrie {
 	}
 	public static void main(String args[]) {
 		
-		String[] testStrings = {"hello", "hell", "aaaa", "adfslj", "asdfajsldkjfa"};
+		//String[] testStrings = {"hello", "hell", "aaaa", "adfslj", "asdfajsldkjfa"};
+		String[] testStrings = {"aaaa"};
 		String[] testResult = sortStrings(testStrings);
 		
 		for(String i : testResult) {
@@ -204,7 +214,7 @@ public class ArrayTrie {
 		for(String str : testStrings) {
 			t.insert(str);
 		}
-		System.out.println(t.children[0].children[3].successor().getWord());
+		System.out.println(t.getNode("aaaa").getWord());
 		
 	}
 }
